@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8"></meta>
+    <title>EventUtil - 事件绑定修复</title>
+    <link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/prism.css" />
+</head>
+
+<body>
+    <div id="container">
+        <div id="left-container" class="half-container">
+            <div class="wrapper">
+                <div class="title">
+                    <h1>EventUtil</h1>
+                    <p>用于抹平 IE 旧版本(IE8 及以下) 与现代浏览器在事件绑定的差异。</p>
+                </div>
+                <div><pre class="code" data-code="div1"><code class="language-js">
+	// 1. 绑定多个不同类型的事件
+	var div1 = document.getElementById("div1");
+	E.addEvent(div1, 'mouseover', function(event) {
+	    this.style.backgroundColor = "#3498db";
+	})
+	E.addEvent(div1, 'mouseout', function(event) {
+	    this.style.backgroundColor = "#1abc9c";
+	})
+	E.addEvent(div1, 'click', function(event) {
+	    this.style.backgroundColor = "#9b59b6";
+	})
+
+	// 支持面向对象绑定的方式
+	var div11 = document.getElementById("div1-1");
+	E(div11).addEvent('mouseover', function(event){
+		this.style.backgroundColor = "#3498db";
+	})
+	E(div11).addEvent('mouseout', function(event){
+		this.style.backgroundColor = "#1abc9c";
+	})
+	E(div11).addEvent('click', function(event){
+		this.style.backgroundColor = "#9b59b6";
+	})
+
+</code></pre></div>
+                <div><pre class="code" data-code="div2"><code class="language-js">
+	// 2. 绑定多个相同的事件，要求顺序执行函数
+	var div2 = document.getElementById("div2");
+
+	var alertOne = function() { alert('第一个事件函数') }
+	var alertTwo = function() { alert('第二个事件函数') }
+	var alertThree = function() { alert('第三个事件函数') }
+
+	E.addEvent(div2, 'click', alertOne)
+	E.addEvent(div2, 'click', alertTwo)
+	E.addEvent(div2, 'click', alertThree)
+</code></pre></div>
+                <div><pre class="code" data-code="div3">
+
+						<code class="language-js">
+	var div3 = document.getElementById("div3");
+
+	var remove = function() {
+	    alert('第一个事件函数');
+	    E.removeEvent(div3, "click", alertTwo)
+	}
+
+	E.addEvent(div3, 'click', remove)
+	E.addEvent(div3, 'click', alertTwo)
+	E.addEvent(div3, 'click', alertThree)
+						</code>
+					</pre>
+                </div>
+                <div>
+                    <pre class="code" data-code="div4">
+						<code class="language-js">
+	// 4. 触发事件
+	var div4 = document.getElementById("div4");
+
+	E.addEvent(div4, 'click', remove)
+	E.addEvent(div4, 'click', alertTwo)
+	E.addEvent(div4, 'click', alertThree)
+
+	var triggerBtn = document.getElementById("div4-trigger-btn");
+	E.addEvent(triggerBtn, 'click', function() {
+	    E.triggerEvent(div4, 'click')
+	})
+						</code>
+					</pre>
+                </div>
+                <div>
+                    <pre class="code" data-code="div5">
+						<code class="language-js">
+	// 5. 阻止冒泡
+	var div5 = document.getElementById("div5");
+	var div5Wrapper = document.getElementById("div5-wrapper");
+
+	E.addEvent(div5Wrapper, 'click', function() {
+	    alert("冒泡触发了外层的事件")
+	})
+
+	E.addEvent(div5, 'click', function(event) {
+	    event.stopPropagation();
+	    alert("阻止了冒泡")
+	})
+						</code>
+					</pre>
+                </div>
+                <div>
+                    <pre class="code" data-code="div6">
+						<code class="language-js">
+	// 6. 阻止默认
+	var div6 = document.getElementById("div6");
+
+	E.addEvent(div6, 'click', function(event) {
+	    event.preventDefault();
+	    alert("阻止了默认的跳转行为")
+	})
+
+	var triggerBtn = document.getElementById("div6-trigger-btn");
+	E.addEvent(triggerBtn, 'click', function() {
+	    E.triggerEvent(div6, 'click')
+	})
+						</code>
+					</pre>
+                </div>
+                <div>
+                    <pre class="code" data-code="div7">
+						<code class="language-js">
+	// 7. event.pageX 和 event.pageY
+	var div7 = document.getElementById("div7");
+
+	E.addEvent(div7, 'click', function(event) {
+	    alert('event.pageX: ' + event.pageX + '\n' + "event.pageY: " + event.pageY)
+	})
+						</code>
+					</pre>
+                </div>
+                <div>
+                    <pre class="code" data-code="div8">
+						<code class="language-js">
+	// 8. event.button
+	var div8 = document.getElementById("div8");
+
+	E.addEvent(div8, 'click', function(event) {
+	    alert('event.button: ' + event.button)
+	})
+						</code>
+					</pre>
+                </div>
+                <div>
+                    <pre class="code" data-code="div9">
+						<code class="language-js">
+	// 9. event.which 0 == left, 1 == middle 2 == right
+	var div9 = document.getElementById("div9");
+
+	E.addEvent(div9, 'keypress', function(event) {
+	    document.getElementById("input-text").innerHTML = String.fromCharCode(event.which)
+	})
+
+
+						</code>
+					</pre>
+                </div>
+                <div>
+                    <pre class="code" data-code="div10">
+						<code class="language-js">
+	// 10. 在元素上绑定数据
+	var div10 = document.getElementById("div10");
+	var setBtn = document.getElementById("set-data");
+	var getBtn = document.getElementById("get-data");
+	var removeBtn = document.getElementById("remove-data");
+
+	E.addEvent(setBtn, 'click', function(event) {
+	    E.setData(div10, 'name', 'Kevin')
+	})
+
+	E.addEvent(getBtn, 'click', function(event) {
+	    alert(E.getData(div10, 'name'))
+	})
+
+	E.addEvent(removeBtn, 'click', function(event) {
+	    E.removeData(div10)
+	})
+						</code>
+					</pre>
+                </div>
+            </div>
+        </div>
+        <div id="right-container" class="half-container">
+            <div class="wrapper">
+                <div class="title">
+                </div>
+                <div id="div1-wrapper" class="div-wrapper">
+                    <div id="div1-0" class="div">div1-0</div>
+                    <div id="div1-1" class="div">div1-1</div>
+                </div>
+                <div id="div2-wrapper" class="div-wrapper">
+                    <div id="div2" class="div">div2</div>
+                </div>
+                <div id="div3-wrapper" class="div-wrapper">
+                    <div id="div3" class="div">div3</div>
+                </div>
+                <div id="div4-wrapper" class="div-wrapper">
+                    <div id="div4" class="div">div4</div>
+                    <button id="div4-trigger-btn">点击触发事件</button>
+                </div>
+                <div id="div5-wrapper" class="div-wrapper">
+                    <div id="div5" class="div">div5</div>
+                </div>
+                <div id="div6-wrapper" class="div-wrapper">
+                    <a id="div6" class="div" href="http://www.baidu.com">div6</a>
+                    <button id="div6-trigger-btn">触发</button>
+                </div>
+                <div id="div7-wrapper" class="div-wrapper">
+                    <div id="div7" class="div">div7</div>
+                </div>
+                <div id="div8-wrapper" class="div-wrapper">
+                    <div id="div8" class="div">div8</div>
+                </div>
+                <div id="div9-wrapper" class="div-wrapper">
+                    <input type="text" id="div9" class="div">
+                    <p class="text">正在输入的字符为 <strong id="input-text"></strong></p>
+
+                </div>
+                <div id="div10-wrapper" class="div-wrapper">
+                    <div id="div10" class="div">div10</div>
+                    <button id="set-data">设置数据</button>
+                    <button id="get-data">获得数据</button>
+                    <button id="remove-data">删除数据</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="js/eventUtil.js"></script>
+    <script src="js/prism.js"></script>
+    <script src="js/index.js"></script>
+</body>
+
+</html>
